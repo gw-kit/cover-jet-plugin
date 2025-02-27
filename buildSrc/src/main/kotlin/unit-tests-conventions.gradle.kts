@@ -1,4 +1,4 @@
-import io.gradle.surpsg.deltacoverage.libDeps
+import io.gradle.gwkit.coverjet.libDeps
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {

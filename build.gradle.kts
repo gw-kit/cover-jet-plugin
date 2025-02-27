@@ -1,5 +1,12 @@
 plugins {
-    `gradle-plugin-conventions`
+    `jvm-project-conventions`
+    id("java-gradle-plugin")
+    id("com.gradle.plugin-publish")
+
+    `unit-tests-conventions`
+    `functional-tests-conventions`
+    `java-test-fixtures`
+
     `delta-coverage-conventions`
 }
 
@@ -20,6 +27,15 @@ gradlePlugin {
             tags.set(listOf("coverage", "jacoco", "report"))
         }
     }
+}
+
+val functionalTestTaskName = "functionalTest"
+val functionalTestSuite: JvmTestSuite = testing.suites.getByName(functionalTestTaskName) as JvmTestSuite
+configure<GradlePluginDevelopmentExtension> {
+    testSourceSets(
+        functionalTestSuite.sources,
+        project.extensions.getByType(JavaPluginExtension::class).sourceSets.getByName("testFixtures")
+    )
 }
 
 tasks.named("check") {
