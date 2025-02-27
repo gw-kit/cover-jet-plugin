@@ -1,0 +1,97 @@
+name: Build
+
+on:
+  workflow_call:
+  push:
+    branches:
+      - 'develop'
+      - 'main'
+      - 'release/**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+
+  build-and-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+      packages: write
+
+    env:
+      GH_USER: ${{ github.actor }}
+      GH_TOKEN: ${{ github.token }}
+      gradle_cmd: "./gradlew --parallel --build-cache --console=plain -Pci "
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+
+      - name: Build & Test
+        run: ${gradle_cmd} build detektMain detektTest :koverXmlReport --continue
+
+      - name: Commits Number
+        id: git-commits
+        run: |
+          echo "number=$(git rev-list HEAD --count)" >> $GITHUB_OUTPUT
+
+      - name: Check publish
+        id: publish-snapshot
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hasLabel = ${{ contains(github.event.pull_request.labels.*.name, 'publish-snapshot-artifacts') }};
+            const isPushEvent = ${{ github.event_name == 'push' }};
+            const isDevelopBranch = ${{ github.ref == 'refs/heads/develop' }};
+            const shouldPublish = hasLabel || (isPushEvent && isDevelopBranch);
+            core.setOutput('should-publish', `${shouldPublish}`);
+            console.log(`shouldPublish: ${shouldPublish}`);
+
+      - name: Publish Snapshot Artifacts
+        if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
+        run: ${gradle_cmd} 
+          delta-coverage-gradle:publishPluginMavenPublicationToGitHubPackagesRepository 
+          -PsnapshotPrefix=${{ steps.git-commits.outputs.number }}
+
+      - name: Run Delta Coverage check
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
+        run: ${gradle_cmd} deltaCoverage 
+          -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" 
+          -x test -x functionalTest
+          --continue
+
+      - name: Publish Coverage Summary
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        continue-on-error: true
+        uses: gw-kit/delta-coverage-action@main
+
+      - name: Add test results to PR
+        uses: EnricoMi/publish-unit-test-result-action@v2.18.0
+        if: ${{ github.event_name == 'pull_request' && !cancelled() }}
+        continue-on-error: true
+        with:
+          files:
+            '**/build/test-results/*/TEST-*.xml'
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: build/reports/kover/report.xml
