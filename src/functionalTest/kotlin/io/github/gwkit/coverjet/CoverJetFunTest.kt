@@ -41,7 +41,7 @@ class CoverJetFunTest {
         // THEN
         gradleRunner
             .runTask(*testTasks.toTypedArray())
-            .printLogs(true)
+            .printLogs(false)
 
         // AND THEN
         val baseReportDirFile = rootProjectDir.resolve("build/")
