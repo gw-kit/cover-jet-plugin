@@ -1,4 +1,5 @@
 import org.gradle.api.plugins.jvm.JvmTestSuite
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
@@ -12,6 +13,10 @@ repositories {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        events(TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.PASSED)
+        showStandardStreams = true
+    }
 }
 
 testing.suites {
