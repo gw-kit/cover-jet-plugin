@@ -14,13 +14,23 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation(deps.mockk)
+
+    functionalTestImplementation(testFixtures(project))
+
+    testFixturesImplementation(deps.junitApi)
+    testFixturesImplementation(deps.kotestAssertions)
+    testFixturesImplementation(deps.mockk)
+}
+
 gradlePlugin {
     website.set("https://github.com/SurpSG/cover-jet-plugin")
     vcsUrl.set("https://github.com/SurpSG/cover-jet-plugin.git")
 
     plugins {
         create("CoverJetPlugin") {
-            id = "io.github.gw-kit.cover-jet-plugin"
+            id = "io.github.gw-kit.cover-jet"
             displayName = "Cover Jet Plugin"
             description = "Plugin that collects coverage from tests"
             implementationClass = "io.github.gwkit.coverjet.gradle.CoverJetPlugin"

@@ -8,6 +8,8 @@ import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
+private const val TEST_KIT_PROPS_FILE = "functionalTest-testkit-gradle.properties"
+
 val GRADLE_HOME: String
     get() {
         val userHome: String = System.getProperty("user.home") ?: error("Cannot obtain 'user.home'.")
@@ -24,8 +26,8 @@ fun buildGradleRunner(
             projectRoot.resolve(GRADLE_HOME).apply { mkdirs() }
         )
         .apply {
-            // gradle testkit jacoco support
-            javaClass.classLoader.getResourceAsStream("testkit-gradle.properties")?.use { inputStream ->
+            // gradle testkit support
+            javaClass.classLoader.getResourceAsStream(TEST_KIT_PROPS_FILE)?.use { inputStream ->
                 File(projectDir, "gradle.properties").outputStream().use { outputStream ->
                     inputStream.copyTo(outputStream)
                 }
@@ -51,6 +53,19 @@ fun BuildResult.assertOutputContainsStrings(vararg expectedString: String): Buil
         expectedString.forEach {
             shouldContain(it)
         }
+    }
+    return this
+}
+
+fun BuildResult.printLogs(enabled: Boolean): BuildResult {
+    if (enabled) {
+        println(
+            """
+            =================== <Build logs> ===================
+            $output
+            =================== </Build logs> ==================
+        """.trimIndent()
+        )
     }
     return this
 }
