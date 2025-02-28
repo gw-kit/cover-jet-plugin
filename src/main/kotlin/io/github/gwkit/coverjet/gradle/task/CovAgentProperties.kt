@@ -25,7 +25,7 @@ internal fun Project.registerGenCoverageAgentProperties(
     }
 }
 
-internal open class CovAgentProperties @Inject constructor(
+open class CovAgentProperties @Inject constructor(
     objects: ObjectFactory,
 ) : DefaultTask() {
 

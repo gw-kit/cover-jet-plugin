@@ -36,7 +36,7 @@ internal open class CovAgentTask @Inject constructor(
     @Internal
     val agentFile: Property<File> = objects.property(File::class.java).convention(
         project.provider {
-            outputs.files.asFileTree.find { it.extension == "jar" }
+            outputs.files.asFileTree.findLast { it.isFile }
         }
     )
 }
