@@ -1,27 +1,14 @@
 package io.github.gwkit.coverjet.gradle
 
-import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Optional
 import javax.inject.Inject
 
-open class DeltaCoverageConfiguration @Inject constructor(
-    objectFactory: ObjectFactory,
+abstract class CoverJetExtension @Inject constructor(
+    objects: ObjectFactory,
 ) {
 
-    @Optional
-    @InputFiles
-    var classesDirs: FileCollection? = null
-
-    @Optional
-    @InputFiles
-    var sources: FileCollection? = null
-
     @Input
-    val excludeClasses: ListProperty<String> = objectFactory
-        .listProperty(String::class.javaObjectType)
-        .convention(emptyList())
+    val intellijCoverageVersion: Property<String> = objects.property(String::class.java).convention("1.0.744")
 }

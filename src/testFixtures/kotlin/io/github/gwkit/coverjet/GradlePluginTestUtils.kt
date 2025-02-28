@@ -54,3 +54,16 @@ fun BuildResult.assertOutputContainsStrings(vararg expectedString: String): Buil
     }
     return this
 }
+
+fun BuildResult.printLogs(enabled: Boolean): BuildResult {
+    if (enabled) {
+        println(
+            """
+            =================== <Build logs> ===================
+            $output
+            =================== </Build logs> ==================
+        """.trimIndent()
+        )
+    }
+    return this
+}

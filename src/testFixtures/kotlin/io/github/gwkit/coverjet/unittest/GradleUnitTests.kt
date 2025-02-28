@@ -1,6 +1,6 @@
 package io.github.gwkit.coverjet.unittest
 
-import io.github.surpsg.deltacoverage.gradle.DeltaCoveragePlugin
+import io.github.gwkit.coverjet.gradle.CoverJetPlugin
 import io.mockk.mockk
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -38,6 +38,6 @@ fun newProject(
 
 inline fun <reified T : Plugin<*>> Project.applyPlugin() = project.pluginManager.apply(T::class.java)
 
-fun Project.applyDeltaCoveragePlugin() = applyPlugin<DeltaCoveragePlugin>()
+fun Project.applyDeltaCoveragePlugin() = applyPlugin<CoverJetPlugin>()
 
 fun Project.applyKotlinPlugin() = project.pluginManager.apply("org.jetbrains.kotlin.jvm")
