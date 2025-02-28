@@ -5,7 +5,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import javax.inject.Inject
 
-abstract class CoverJetExtension @Inject constructor(
+open class CoverJetExtension @Inject constructor(
     objects: ObjectFactory,
 ) {
 

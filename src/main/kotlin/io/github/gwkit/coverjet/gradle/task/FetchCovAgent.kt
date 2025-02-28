@@ -26,7 +26,7 @@ internal fun Project.registerCopyCoverageAgentTask(
     }
 }
 
-internal abstract class CovAgentTask @Inject constructor(
+internal open class CovAgentTask @Inject constructor(
     objects: ObjectFactory,
 ) : Copy() {
     init {
