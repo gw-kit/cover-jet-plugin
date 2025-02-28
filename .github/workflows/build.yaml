@@ -43,7 +43,7 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
-      - name: Build & Test
+      - name: ⚙️Build & Test
         run: ${gradle_cmd} build detektMain detektTest --continue
 
       - name: Commits Number
@@ -74,7 +74,6 @@ jobs:
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
         run: ${gradle_cmd} deltaCoverage 
           -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" 
-          -x test -x functionalTest
           --continue
 
       - name: Publish Coverage Summary
@@ -87,6 +86,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
         with:
+          check_name: '📊Test Results'
           files:
             '**/build/test-results/*/TEST-*.xml'
 
@@ -94,4 +94,4 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: build/reports/kover/report.xml
+          files: build/reports/coverage-reports/delta-coverage/**/report.xml
