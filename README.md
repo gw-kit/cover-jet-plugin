@@ -12,7 +12,7 @@ Also, the plugin provides infrastructure to collect coverage from GradleRunner t
 
 ### Compatibility
 
-Delta Coverage plugin compatibility table:
+`CoverJet` compatibility table:
 
 | CoverJet plugin | Gradle                 | min JVM |
 |-----------------|------------------------|---------|
