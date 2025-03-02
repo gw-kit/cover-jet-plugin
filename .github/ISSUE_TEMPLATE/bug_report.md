@@ -13,17 +13,10 @@ A clear and concise description of what the bug is.
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows 10]
  - Gradle version: [e.g. 7.4.2]
- - Delta Coverage plugin version [e.g. 1.0.0]
+ - `CoverJet` plugin version [e.g. 1.0.0]
 
 **To Reproduce**
-If possible, provide your configuration of the plugin, for example:
-```groovy
-deltaCoverageReport {
-    diffSource.file = 'diff.patch'
-
-    violationRules.failIfCoverageLessThan 0.9
-}
-```
+If possible, provide your configuration of the plugin
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
