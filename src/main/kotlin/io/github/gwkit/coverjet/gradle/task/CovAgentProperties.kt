@@ -67,18 +67,20 @@ open class CovAgentProperties @Inject constructor(
     }
 
     private fun Project.buildIncludeSourcesPatterns(): Provider<Set<String>> {
-        return project.rootProject.allprojects.map { proj ->
-            proj.getSourceSet("main").map { it.allJava.srcDirs }
-        }.fold(
-            project.provider<Set<File>> { emptySet() },
-            ::merge
-        ).map { allSourceFiles ->
-            allSourceFiles.asSequence()
-                .filter { it.exists() }
-                .map { file -> obtainCommonPackage(file) }
-                .map { it.toIncludePackageRegex() }
-                .toSet()
-        }
+        return project.rootProject.allprojects.asSequence()
+            .mapNotNull { proj -> proj.getSourceSet("main") }
+            .map { sourceSetProvider -> sourceSetProvider.map { it.allJava.srcDirs } }
+            .fold(
+                project.provider<Set<File>> { emptySet() },
+                ::merge,
+            )
+            .map { allSourceFiles ->
+                allSourceFiles.asSequence()
+                    .filter { it.exists() }
+                    .map { file -> obtainCommonPackage(file) }
+                    .map { it.toIncludePackageRegex() }
+                    .toSet()
+            }
     }
 
     private fun <T : Any, C : Iterable<T>> merge(
