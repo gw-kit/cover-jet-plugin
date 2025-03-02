@@ -1,53 +1,31 @@
 package io.github.gwkit.coverjet.gradle
 
-import io.github.gwkit.coverjet.gradle.task.CovAgentTask
-import io.github.gwkit.coverjet.gradle.task.generateTestKitProperties
-import io.github.gwkit.coverjet.gradle.task.registerCopyCoverageAgentTask
-import io.github.gwkit.coverjet.gradle.util.getSourceSet
+import io.github.gwkit.coverjet.gradle.agent.registerAgentConfigWithDependency
 import io.github.gwkit.coverjet.gradle.provider.CovJvmArgumentsProvider
+import io.github.gwkit.coverjet.gradle.task.generateTestKitProperties
 import io.github.gwkit.coverjet.gradle.task.registerGenCoverageAgentProperties
-import org.gradle.api.NamedDomainObjectProvider
+import io.github.gwkit.coverjet.gradle.util.getSourceSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.language.jvm.tasks.ProcessResources
-import java.util.concurrent.ConcurrentHashMap
+import java.io.File
 
 open class CoverJetPlugin : Plugin<Project> {
 
     override fun apply(project: Project) = with(project) {
         val extension: CoverJetExtension = extensions.create("coverJet", CoverJetExtension::class.java)
 
-        val coverJetAgentConfig: NamedDomainObjectProvider<Configuration> =
-            project.registerAgentConfigWithDependency(extension)
+        val coverJetAgentProvider: Provider<File> = project.registerAgentConfigWithDependency(extension)
 
-        val covAgent: TaskProvider<CovAgentTask> = project.registerCopyCoverageAgentTask(
-            extension = extension,
-            agentConfig = coverJetAgentConfig,
-        )
-
-        configureTestTasks(covAgent)
-    }
-
-    private fun Project.registerAgentConfigWithDependency(
-        extension: CoverJetExtension,
-    ): NamedDomainObjectProvider<Configuration> {
-        return project.configurations.register("coverJetAgent") { config ->
-            dependencies.add(config.name, intellijAgentDep(extension.intellijCoverageVersion))
-        }
+        configureTestTasks(coverJetAgentProvider)
     }
 
     private fun Project.configureTestTasks(
-        covAgentProvider: TaskProvider<CovAgentTask>,
+        covAgentProvider: Provider<File>,
     ) {
-        val testTasks = mutableSetOf<String>()
-        val testTaskToProps = ConcurrentHashMap<String, Task>()
         tasks.withType(Test::class.java) { testTask ->
-            testTasks += testTask.name
 
             val agentPropertiesProvider = registerGenCoverageAgentProperties(testTask.name)
             val jvmArgsProvider = CovJvmArgumentsProvider(covAgentProvider, agentPropertiesProvider)
@@ -55,8 +33,7 @@ open class CoverJetPlugin : Plugin<Project> {
             testTask.jvmArgumentProviders += jvmArgsProvider
 
             val generateTestKitPropTaskProvider = generateTestKitProperties(testTask.name, jvmArgsProvider) {
-                dependsOn(covAgentProvider, agentPropertiesProvider)
-                testTaskToProps[testTask.name] = this
+                dependsOn(agentPropertiesProvider)
             }
             testTask.dependsOn(generateTestKitPropTaskProvider)
 
@@ -72,9 +49,5 @@ open class CoverJetPlugin : Plugin<Project> {
                 }
             }
         }
-    }
-
-    private fun intellijAgentDep(version: Provider<String>): Provider<String> = version.map {
-        "org.jetbrains.intellij.deps:intellij-coverage-agent:$it"
     }
 }
