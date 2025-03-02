@@ -2,6 +2,7 @@ package io.github.gwkit.coverjet.gradle
 
 import io.github.gwkit.coverjet.gradle.agent.registerAgentConfigWithDependency
 import io.github.gwkit.coverjet.gradle.provider.CovJvmArgumentsProvider
+import io.github.gwkit.coverjet.gradle.provider.TestKitFileProvider
 import io.github.gwkit.coverjet.gradle.task.generateTestKitProperties
 import io.github.gwkit.coverjet.gradle.task.registerGenCoverageAgentProperties
 import io.github.gwkit.coverjet.gradle.util.getSourceSet
@@ -34,6 +35,8 @@ open class CoverJetPlugin : Plugin<Project> {
 
             val generateTestKitPropTaskProvider = generateTestKitProperties(testTask.name, jvmArgsProvider) {
                 dependsOn(agentPropertiesProvider)
+
+                testTask.jvmArgumentProviders += TestKitFileProvider(destinationFile.asFile)
             }
             testTask.dependsOn(generateTestKitPropTaskProvider)
 
