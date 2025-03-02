@@ -1,17 +1,13 @@
-import io.github.surpsg.deltacoverage.CoverageEngine
+import io.github.surpsg.deltacoverage.gradle.CoverageEngine
 import io.github.surpsg.deltacoverage.gradle.CoverageEntity
 
 plugins {
     base
-    id("basic-coverage-conventions")
     id("io.github.gw-kit.delta-coverage")
 }
 
 deltaCoverageReport {
-    coverage {
-        engine = CoverageEngine.INTELLIJ
-        autoApplyPlugin = false
-    }
+    coverage.engine = CoverageEngine.INTELLIJ
 
     diffSource.byGit {
         diffBase = project.properties["diffBase"]?.toString() ?: "refs/remotes/origin/main"

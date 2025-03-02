@@ -3,7 +3,6 @@ plugins {
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish")
 
-    `unit-tests-conventions`
     `functional-tests-conventions`
     `java-test-fixtures`
 
