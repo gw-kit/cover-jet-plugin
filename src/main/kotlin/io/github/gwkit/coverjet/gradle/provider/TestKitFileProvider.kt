@@ -18,6 +18,6 @@ internal class TestKitFileProvider @Inject constructor(
     }
 
     companion object {
-        private const val TEST_KIT_FILE = "io.github.gwkit.coverjet.test-kit"
+        const val TEST_KIT_FILE = "io.github.gwkit.coverjet.test-kit"
     }
 }

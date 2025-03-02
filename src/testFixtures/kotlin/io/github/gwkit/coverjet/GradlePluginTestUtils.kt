@@ -1,5 +1,6 @@
 package io.github.gwkit.coverjet
 
+import io.github.gwkit.coverjet.gradle.provider.TestKitFileProvider
 import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.BuildResult
@@ -7,8 +8,6 @@ import org.gradle.testkit.runner.GradleRunner
 import java.io.File
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
-
-private const val TEST_KIT_PROPS_FILE = "functionalTest-testkit-gradle.properties"
 
 val GRADLE_HOME: String
     get() {
@@ -27,11 +26,10 @@ fun buildGradleRunner(
         )
         .apply {
             // gradle testkit support
-            javaClass.classLoader.getResourceAsStream(TEST_KIT_PROPS_FILE)?.use { inputStream ->
-                File(projectDir, "gradle.properties").outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
+            val testKitPath: String = System.getProperty(TestKitFileProvider.TEST_KIT_FILE)
+            File(projectDir, "gradle.properties").appendText(
+                File(testKitPath).readText()
+            )
         }
 }
 
