@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    `maven-publish`
+    id("gh-publish-conventions")
 
     id("io.gitlab.arturbosch.detekt")
     id("unit-tests-conventions")
@@ -21,25 +21,4 @@ java {
 
 repositories {
     mavenCentral()
-}
-
-if (project.hasProperty("snapshotPrefix")) {
-    val snapshotPrefix: String by project
-    version = "$version.${snapshotPrefix}"
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/gw-kit/cover-jet-plugin")
-            credentials {
-                username = System.getenv("GH_USER")
-                password = System.getenv("GH_TOKEN")
-            }
-            mavenContent {
-                snapshotsOnly()
-            }
-        }
-    }
 }
