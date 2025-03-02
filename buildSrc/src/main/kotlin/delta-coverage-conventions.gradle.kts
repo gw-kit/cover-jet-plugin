@@ -3,7 +3,6 @@ import io.github.surpsg.deltacoverage.gradle.CoverageEntity
 
 plugins {
     base
-    id("basic-coverage-conventions")
     id("io.github.gw-kit.delta-coverage")
 }
 
