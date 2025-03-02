@@ -4,7 +4,7 @@ plugins {
 
 if (rootProject.hasProperty("snapshotPrefix")) {
     val snapshotPrefix: String by project
-    version = "$version-${snapshotPrefix}.SNAPSHOT"
+    version = "$version-SNAPSHOT.${snapshotPrefix}"
 }
 
 publishing {
