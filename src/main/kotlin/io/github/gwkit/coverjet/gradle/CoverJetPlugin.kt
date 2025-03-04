@@ -20,16 +20,17 @@ open class CoverJetPlugin : Plugin<Project> {
 
         val coverJetAgentProvider: Provider<File> = project.registerAgentConfigWithDependency(extension)
 
-        configureTestTasks(coverJetAgentProvider)
+        configureTestTasks(extension, coverJetAgentProvider)
     }
 
     private fun Project.configureTestTasks(
+        extension: CoverJetExtension,
         covAgentProvider: Provider<File>,
     ) {
         tasks.withType(Test::class.java) { testTask ->
 
             val agentPropertiesProvider = registerGenCoverageAgentProperties(testTask.name)
-            val jvmArgsProvider = CovJvmArgumentsProvider(covAgentProvider, agentPropertiesProvider)
+            val jvmArgsProvider = CovJvmArgumentsProvider(extension, covAgentProvider, agentPropertiesProvider)
 
             testTask.jvmArgumentProviders += jvmArgsProvider
 

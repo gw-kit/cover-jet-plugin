@@ -11,4 +11,10 @@ open class CoverJetExtension @Inject constructor(
 
     @Input
     val intellijCoverageVersion: Property<String> = objects.property(String::class.java).convention("1.0.744")
+
+    @Input
+    val countHits: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
+
+    @Input
+    val enableTracing: Property<Boolean> = objects.property(Boolean::class.java).convention(true)
 }
