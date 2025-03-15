@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    kotlin("jvm") version "1.9.25"
+    kotlin("jvm") version "2.1.10"
     id("io.github.gw-kit.cover-jet")
 }
 
