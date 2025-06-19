@@ -3,12 +3,17 @@ package io.github.gwkit.coverjet.gradle
 import io.github.gwkit.coverjet.gradle.agent.registerAgentConfigWithDependency
 import io.github.gwkit.coverjet.gradle.provider.CovJvmArgumentsProvider
 import io.github.gwkit.coverjet.gradle.provider.TestKitFileProvider
+import io.github.gwkit.coverjet.gradle.task.CovJvmParameter
+import io.github.gwkit.coverjet.gradle.task.CovAgentProperties
 import io.github.gwkit.coverjet.gradle.task.generateTestKitProperties
-import io.github.gwkit.coverjet.gradle.task.registerGenCoverageAgentProperties
+import io.github.gwkit.coverjet.gradle.task.readJavaAgentParameter
+import io.github.gwkit.coverjet.gradle.task.registerGenCoverageAgentArgs
+import io.github.gwkit.coverjet.gradle.task.registerCovJvmParameter
 import io.github.gwkit.coverjet.gradle.util.getSourceSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.language.jvm.tasks.ProcessResources
 import java.io.File
@@ -28,14 +33,20 @@ open class CoverJetPlugin : Plugin<Project> {
     ) {
         tasks.withType(Test::class.java) { testTask ->
 
-            val agentPropertiesProvider = registerGenCoverageAgentProperties(testTask.name)
-            val jvmArgsProvider = CovJvmArgumentsProvider(covAgentProvider, agentPropertiesProvider)
+            val agentArgsProvider: TaskProvider<CovAgentProperties> = registerGenCoverageAgentArgs(
+                testTask.name
+            )
+            val covJvmArgProvider: TaskProvider<CovJvmParameter> = registerCovJvmParameter(
+                testTask.name,
+                covAgentProvider,
+                agentArgsProvider,
+            )
 
-            testTask.jvmArgumentProviders += jvmArgsProvider
+            testTask.jvmArgumentProviders += CovJvmArgumentsProvider(
+                covJvmArgProvider.readJavaAgentParameter()
+            )
 
-            val generateTestKitPropTaskProvider = generateTestKitProperties(testTask.name, jvmArgsProvider) {
-                dependsOn(agentPropertiesProvider)
-
+            val generateTestKitPropTaskProvider = generateTestKitProperties(testTask.name, covJvmArgProvider) {
                 testTask.jvmArgumentProviders += TestKitFileProvider(destinationFile.asFile)
             }
             testTask.dependsOn(generateTestKitPropTaskProvider)

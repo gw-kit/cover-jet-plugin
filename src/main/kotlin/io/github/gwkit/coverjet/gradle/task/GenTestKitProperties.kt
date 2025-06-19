@@ -1,13 +1,13 @@
 package io.github.gwkit.coverjet.gradle.task
 
-import io.github.gwkit.coverjet.gradle.provider.CovJvmArgumentsProvider
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.WriteProperties
 
 internal fun Project.generateTestKitProperties(
     testTaskName: String,
-    jvmArgsProvider: CovJvmArgumentsProvider,
+    javaAgentPropertyProvider: TaskProvider<CovJvmParameter>,
     configure: WriteProperties.() -> Unit,
 ): TaskProvider<WriteProperties> = tasks.register(
     "${testTaskName}TestKitProperties",
@@ -21,12 +21,12 @@ internal fun Project.generateTestKitProperties(
         val testKitPropertiesFile = layout.buildDirectory.file("testkit/${testTaskName}-testkit-gradle.properties")
         destinationFile.set(testKitPropertiesFile)
 
-        property(
-            "org.gradle.jvmargs",
-            provider {
-                jvmArgsProvider.asArguments().joinToString(" ")
-            }
-        )
+        inputs.files(javaAgentPropertyProvider)
+
+        val jvmArgs: Provider<String> = javaAgentPropertyProvider.readJavaAgentParameter()
+            .map { it.joinToString(" ") }
+
+        property("org.gradle.jvmargs", jvmArgs)
 
         configure()
     }
