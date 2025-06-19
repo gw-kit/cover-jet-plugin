@@ -10,7 +10,8 @@ import io.kotest.matchers.file.shouldBeAFile
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
 @GradlePluginTest(TestProjects.SINGLE_MODULE, kts = true)
@@ -30,7 +31,14 @@ class CoverJetFunTest {
         buildFile.restoreOriginContent()
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "7.6.4",
+            "8.13",
+            "8.14.2",
+        ]
+    )
     fun `test tasks should generate binary coverage files`() {
         // WHEN
         val testTasks = listOf(
@@ -49,7 +57,8 @@ class CoverJetFunTest {
             testTasks.forEach { task ->
                 resolve("coverage/${task}.ic").shouldBeAFile()
                 resolve("testkit/${task}-testkit-gradle.properties").shouldBeAFile()
-                resolve("tmp/${task}CovAgentProperties/intellij-agent.args").shouldBeAFile()
+                resolve("tmp/${task}CovAgentArgs/intellij-agent.args").shouldBeAFile()
+                resolve("tmp/${task}CovJvmParameter/jvm-agent.arg").shouldBeAFile()
             }
         }
     }

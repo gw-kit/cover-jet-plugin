@@ -2,7 +2,7 @@ import org.gradle.api.plugins.jvm.JvmTestSuite
 
 plugins {
     java
-    kotlin("jvm") version "1.9.25"
+    kotlin("jvm") version "2.1.21"
     id("io.github.gw-kit.cover-jet")
     `java-test-fixtures`
 }
@@ -25,7 +25,7 @@ subprojects {
     }
 
     dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.11.4"))
+        testImplementation(platform("org.junit:junit-bom:5.13.1"))
         testImplementation("org.junit.jupiter:junit-jupiter")
     }
 
@@ -34,7 +34,7 @@ subprojects {
             useJUnitJupiter()
             dependencies {
                 implementation(project())
-                implementation(platform("org.junit:junit-bom:5.11.4"))
+                implementation(platform("org.junit:junit-bom:5.13.1"))
                 implementation("org.junit.jupiter:junit-jupiter")
             }
         }

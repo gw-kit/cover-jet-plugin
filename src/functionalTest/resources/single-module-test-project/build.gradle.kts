@@ -3,7 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
-    kotlin("jvm") version "1.9.25"
+    kotlin("jvm") version "2.1.21"
     id("io.github.gw-kit.cover-jet")
 }
 
@@ -23,7 +23,7 @@ testing.suites {
     val test by getting(JvmTestSuite::class) {
         useJUnitJupiter()
         dependencies {
-            implementation(platform("org.junit:junit-bom:5.11.4"))
+            implementation(platform("org.junit:junit-bom:5.13.1"))
             implementation("org.junit.jupiter:junit-jupiter")
         }
     }
@@ -31,7 +31,7 @@ testing.suites {
         useJUnitJupiter()
         dependencies {
             implementation(project())
-            implementation(platform("org.junit:junit-bom:5.11.4"))
+            implementation(platform("org.junit:junit-bom:5.13.1"))
             implementation("org.junit.jupiter:junit-jupiter")
         }
     }
