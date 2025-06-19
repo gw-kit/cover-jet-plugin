@@ -1,6 +1,6 @@
 [versions]
 junitVer = "5.12.2"
-mockkVer = "1.14.0"
+mockkVer = "1.14.2"
 kotestVer = "5.9.1"
 
 deltaCoverageVer = "3.3.0"
