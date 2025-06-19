@@ -1,5 +1,5 @@
 [versions]
-junitVer = "5.12.2"
+junitVer = "5.13.1"
 mockkVer = "1.14.0"
 kotestVer = "5.9.1"
 
