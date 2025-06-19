@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
@@ -17,10 +18,10 @@ import javax.inject.Inject
 import kotlin.io.path.isDirectory
 import kotlin.io.path.listDirectoryEntries
 
-internal fun Project.registerGenCoverageAgentProperties(
+internal fun Project.registerGenCoverageAgentArgs(
     taskName: String,
 ): TaskProvider<CovAgentProperties> {
-    return tasks.register("${taskName}CovAgentProperties", CovAgentProperties::class.java) { task ->
+    return tasks.register("${taskName}CovAgentArgs", CovAgentProperties::class.java) { task ->
         task.taskName.set(taskName)
     }
 }
@@ -39,6 +40,10 @@ open class CovAgentProperties @Inject constructor(
         }
     )
 
+    @Input
+    val includeSourcesPatterns: ListProperty<String> =objects.listProperty(String::class.java)
+        .convention(IncludeSourcesPatterns.buildIncludeSourcesPatterns(project))
+
     @OutputFile
     val propertiesFile: RegularFileProperty = objects.fileProperty().convention {
         temporaryDir.resolve("intellij-agent.args")
@@ -46,7 +51,7 @@ open class CovAgentProperties @Inject constructor(
 
     @TaskAction
     fun genProperties() {
-        val includePatterns: Set<String> = project.buildIncludeSourcesPatterns().get()
+        val includePatterns: List<String> = includeSourcesPatterns.get()
 
         propertiesFile.get().asFile.printWriter().use { pw ->
             with(pw) {
@@ -66,7 +71,17 @@ open class CovAgentProperties @Inject constructor(
         }
     }
 
-    private fun Project.buildIncludeSourcesPatterns(): Provider<Set<String>> {
+    companion object {
+        private const val TRACKING_PER_TEST = false
+        private const val CALCULATE_FOR_UNLOADED_CLASSES = false
+        private const val APPEND_TO_DATA_FILE = true
+        private const val LINING_ONLY_MODE = false
+    }
+}
+
+private object IncludeSourcesPatterns {
+
+    fun buildIncludeSourcesPatterns(project: Project): Provider<Set<String>> {
         return project.rootProject.allprojects.asSequence()
             .mapNotNull { proj -> proj.getSourceSet("main") }
             .map { sourceSetProvider -> sourceSetProvider.map { it.allJava.srcDirs } }
@@ -104,12 +119,5 @@ open class CovAgentProperties @Inject constructor(
 
     private fun String.toIncludePackageRegex(): String {
         return this.replace(".", "\\.") + "\\..*"
-    }
-
-    companion object {
-        private const val TRACKING_PER_TEST = false
-        private const val CALCULATE_FOR_UNLOADED_CLASSES = false
-        private const val APPEND_TO_DATA_FILE = true
-        private const val LINING_ONLY_MODE = false
     }
 }
