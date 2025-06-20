@@ -25,7 +25,8 @@ jobs:
     env:
       GH_USER: ${{ github.actor }}
       GH_TOKEN: ${{ github.token }}
-      gradle_cmd: "./gradlew --parallel --build-cache --console=plain -Pci "
+      gradle_cmd: ./gradlew --parallel -Pci --console=plain
+        --build-cache --configuration-cache
 
     steps:
       - uses: actions/checkout@v4
@@ -44,7 +45,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
 
       - name: ⚙️Build & Test
-        run: ${gradle_cmd} build detektMain detektTest --continue
+        run: ${{ env.gradle_cmd }} build detektMain detektTest --continue
 
       - name: Check publish
         id: publish-snapshot
@@ -60,20 +61,20 @@ jobs:
 
       - name: Publish Snapshot Artifacts
         if: ${{ steps.publish-snapshot.outputs.should-publish == 'true' }}
-        run: ${gradle_cmd} publishAllPublicationsToGhPackagesRepository 
+        run: ${{ env.gradle_cmd }} publishAllPublicationsToGhPackagesRepository 
           -PsnapshotPrefix='SNAPSHOT.${{ github.run_id }}'
 
       - name: Run Delta Coverage check
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: ${{ contains(github.event.pull_request.labels.*.name, 'suppress-delta-coverage') }}
-        run: ${gradle_cmd} deltaCoverage 
+        run: ${{ env.gradle_cmd }} deltaCoverage 
           -PdiffBase="refs/remotes/origin/$GITHUB_BASE_REF" 
           --continue
 
       - name: Publish Coverage Summary
         if: ${{ github.event_name == 'pull_request' && !cancelled() }}
         continue-on-error: true
-        uses: gw-kit/delta-coverage-action@main
+        uses: gw-kit/delta-coverage-action@v1
 
       - name: Add test results to PR
         uses: EnricoMi/publish-unit-test-result-action@v2.20.0

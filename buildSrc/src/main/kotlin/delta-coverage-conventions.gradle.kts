@@ -18,23 +18,6 @@ deltaCoverageReport {
         html = true
         xml = true
         markdown = true
-    }
-
-    view(JavaPlugin.TEST_TASK_NAME) {
-        enabled = false // Temporary disable
-        violationRules.failIfCoverageLessThan(0.9)
-    }
-    view("functionalTest") {
-        coverageBinaryFiles = files(project.layout.buildDirectory.file("coverage/functionalTest.ic"))
-        violationRules {
-            failIfCoverageLessThan(0.6)
-            CoverageEntity.BRANCH {
-                minCoverageRatio = 0.5
-            }
-        }
-    }
-    view("aggregated") {
-        enabled = false // Temporary disable
-        violationRules.failIfCoverageLessThan(0.91)
+        fullCoverageReport = true
     }
 }
