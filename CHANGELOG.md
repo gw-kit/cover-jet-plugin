@@ -1,5 +1,10 @@
 # CoverJet Gradle plugin Changelog
 
+## 0.1.1
+
+- #23 Fixed configuration cache
+- Updated Gradle to 8.14.2
+
 ## 0.1.0
 
 - Simplified configuration by removing copy jvm coverage agent copy task.
