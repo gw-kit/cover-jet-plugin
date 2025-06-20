@@ -25,7 +25,7 @@ internal fun Project.generateTestKitProperties(
     )
 }
 
-internal abstract class GenTestKitProperties @Inject constructor(
+internal open class GenTestKitProperties @Inject constructor(
     objects: ObjectFactory,
 ) : DefaultTask() {
 
