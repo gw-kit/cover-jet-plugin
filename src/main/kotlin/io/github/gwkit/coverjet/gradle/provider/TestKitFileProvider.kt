@@ -3,12 +3,11 @@ package io.github.gwkit.coverjet.gradle.provider
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.process.CommandLineArgumentProvider
-import java.io.Serializable
 import javax.inject.Inject
 
 internal class TestKitFileProvider @Inject constructor(
     private val testKitFile: Provider<RegularFile>,
-) : CommandLineArgumentProvider, Serializable {
+) : CommandLineArgumentProvider {
 
     override fun asArguments(): MutableIterable<String> {
         val jvmProperty: String = testKitFile

@@ -2,6 +2,7 @@ package io.github.gwkit.coverjet.gradle.task
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -28,18 +29,8 @@ internal fun Project.registerCovJvmParameter(
     }
 }
 
-internal fun TaskProvider<CovJvmParameter>.readJavaAgentParameter(): Provider<List<String>> {
-    return flatMap { it.javaAgentParameters.readJavaAgentParameter() }
-}
-
-internal fun RegularFileProperty.readJavaAgentParameter(): Provider<List<String>> {
-    return map { it.asFile }
-        .filter {
-            val res = it.exists()
-            println("---------------------------- $it exists: $res")
-            res
-        }
-        .map { file -> file.readLines() }
+internal fun Provider<RegularFile>.readJavaAgentParameter(): Provider<List<String>> {
+    return map { it.asFile.readLines() }
 }
 
 internal open class CovJvmParameter @Inject constructor(

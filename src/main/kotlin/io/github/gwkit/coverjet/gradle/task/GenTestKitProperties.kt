@@ -42,7 +42,7 @@ internal abstract class GenTestKitProperties @Inject constructor(
 
     @OutputFile
     val propertiesFile: RegularFileProperty = objects.fileProperty().convention {
-        temporaryDir.resolve("${taskName.get()}-testkit-gradle.properties")
+        temporaryDir.resolve("testkit-gradle.properties")
     }
 
     @TaskAction
