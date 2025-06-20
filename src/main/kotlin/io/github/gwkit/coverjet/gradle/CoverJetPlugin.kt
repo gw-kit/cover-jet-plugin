@@ -3,12 +3,12 @@ package io.github.gwkit.coverjet.gradle
 import io.github.gwkit.coverjet.gradle.agent.registerAgentConfigWithDependency
 import io.github.gwkit.coverjet.gradle.provider.CovJvmArgumentsProvider
 import io.github.gwkit.coverjet.gradle.provider.TestKitFileProvider
-import io.github.gwkit.coverjet.gradle.task.CovJvmParameter
 import io.github.gwkit.coverjet.gradle.task.CovAgentProperties
+import io.github.gwkit.coverjet.gradle.task.CovJvmParameter
+import io.github.gwkit.coverjet.gradle.task.GenTestKitProperties
 import io.github.gwkit.coverjet.gradle.task.generateTestKitProperties
-import io.github.gwkit.coverjet.gradle.task.readJavaAgentParameter
-import io.github.gwkit.coverjet.gradle.task.registerGenCoverageAgentArgs
 import io.github.gwkit.coverjet.gradle.task.registerCovJvmParameter
+import io.github.gwkit.coverjet.gradle.task.registerGenCoverageAgentArgs
 import io.github.gwkit.coverjet.gradle.util.getSourceSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -20,47 +20,70 @@ import java.io.File
 
 open class CoverJetPlugin : Plugin<Project> {
 
-    override fun apply(project: Project) = with(project) {
+    override fun apply(project: Project): Unit = with(project) {
         val extension: CoverJetExtension = extensions.create("coverJet", CoverJetExtension::class.java)
 
-        val coverJetAgentProvider: Provider<File> = project.registerAgentConfigWithDependency(extension)
+        val coverJetAgentJarProvider: Provider<File> = project.registerAgentConfigWithDependency(
+            extension.intellijCoverageVersion
+        )
 
-        configureTestTasks(coverJetAgentProvider)
+        tasks.withType(Test::class.java) { testTask ->
+            val covJvmArgProvider: TaskProvider<CovJvmParameter> = registerCovAgentJvmParamGenTask(
+                testTask.name,
+                coverJetAgentJarProvider,
+            )
+            testTask.applyCoverageAgentToJvmArgs(covJvmArgProvider)
+            testTask.applyTestKit(covJvmArgProvider)
+        }
     }
 
-    private fun Project.configureTestTasks(
-        covAgentProvider: Provider<File>,
+    private fun Project.registerCovAgentJvmParamGenTask(
+        testTaskName: String,
+        coverJetAgentJarProvider: Provider<File>,
+    ): TaskProvider<CovJvmParameter> {
+        val agentArgsProvider: TaskProvider<CovAgentProperties> = registerGenCoverageAgentArgs(
+            testTaskName
+        )
+        val covJvmArgProvider: TaskProvider<CovJvmParameter> = registerCovJvmParameter(
+            testTaskName,
+            coverJetAgentJarProvider,
+            agentArgsProvider,
+        )
+        return covJvmArgProvider
+    }
+
+    private fun Test.applyCoverageAgentToJvmArgs(
+        covJvmArgProvider: TaskProvider<CovJvmParameter>
     ) {
-        tasks.withType(Test::class.java) { testTask ->
+        inputs.files(covJvmArgProvider)
+        jvmArgumentProviders += CovJvmArgumentsProvider(
+            covJvmArgProvider.flatMap { it.javaAgentParameters }
+        )
+    }
 
-            val agentArgsProvider: TaskProvider<CovAgentProperties> = registerGenCoverageAgentArgs(
-                testTask.name
-            )
-            val covJvmArgProvider: TaskProvider<CovJvmParameter> = registerCovJvmParameter(
-                testTask.name,
-                covAgentProvider,
-                agentArgsProvider,
-            )
+    private fun Test.applyTestKit(
+        covJvmArgProvider: TaskProvider<CovJvmParameter>
+    ) {
+        val testTaskName: String = name
+        val genTestKitPropsProvider: TaskProvider<GenTestKitProperties> = project.generateTestKitProperties(
+            testTaskName,
+            covJvmArgProvider,
+        )
+        inputs.files(genTestKitPropsProvider)
 
-            testTask.jvmArgumentProviders += CovJvmArgumentsProvider(
-                covJvmArgProvider.readJavaAgentParameter()
-            )
+        jvmArgumentProviders += TestKitFileProvider(
+            genTestKitPropsProvider.flatMap { it.javaAgentParametersFile }
+        )
 
-            val generateTestKitPropTaskProvider = generateTestKitProperties(testTask.name, covJvmArgProvider) {
-                testTask.jvmArgumentProviders += TestKitFileProvider(destinationFile.asFile)
+        project.getSourceSet(testTaskName) { sourceSet ->
+            project.tasks.named(sourceSet.processResourcesTaskName, ProcessResources::class.java) {
+                it.from(genTestKitPropsProvider)
             }
-            testTask.dependsOn(generateTestKitPropTaskProvider)
 
-            getSourceSet(testTask.name) { sourceSet ->
-                tasks.named(sourceSet.processResourcesTaskName, ProcessResources::class.java) {
-                    it.from(generateTestKitPropTaskProvider)
-                }
-
-                configurations.named(sourceSet.runtimeOnlyConfigurationName) { runtimeOnlyConfig ->
-                    runtimeOnlyConfig.dependencies += dependencyFactory.create(
-                        generateTestKitPropTaskProvider.get().outputs.files
-                    )
-                }
+            project.configurations.named(sourceSet.runtimeOnlyConfigurationName) { runtimeOnlyConfig ->
+                runtimeOnlyConfig.dependencies += project.dependencyFactory.create(
+                    genTestKitPropsProvider.get().outputs.files
+                )
             }
         }
     }

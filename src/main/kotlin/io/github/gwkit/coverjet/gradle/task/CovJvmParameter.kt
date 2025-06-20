@@ -2,6 +2,7 @@ package io.github.gwkit.coverjet.gradle.task
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -28,8 +29,8 @@ internal fun Project.registerCovJvmParameter(
     }
 }
 
-internal fun TaskProvider<CovJvmParameter>.readJavaAgentParameter(): Provider<List<String>> {
-    return flatMap { it.javaAgentParameter.asFile }.map { file -> file.readLines() }
+internal fun Provider<RegularFile>.readJavaAgentParameter(): Provider<List<String>> {
+    return map { it.asFile.readLines() }
 }
 
 internal open class CovJvmParameter @Inject constructor(
@@ -43,7 +44,7 @@ internal open class CovJvmParameter @Inject constructor(
     val covAgentPropertiesPath: Property<String> = objects.property(String::class.java)
 
     @OutputFile
-    val javaAgentParameter: RegularFileProperty = objects.fileProperty().convention {
+    val javaAgentParameters: RegularFileProperty = objects.fileProperty().convention {
         temporaryDir.resolve("jvm-agent.arg")
     }
 
@@ -62,7 +63,7 @@ internal open class CovJvmParameter @Inject constructor(
             .get()
             .joinToString("\n")
 
-        javaAgentParameter.asFile.get().writeText(agentProperty)
+        javaAgentParameters.asFile.get().writeText(agentProperty)
     }
 
     private val String.jvmProp: String

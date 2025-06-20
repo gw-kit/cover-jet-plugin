@@ -16,8 +16,8 @@ Also, the plugin provides infrastructure to collect coverage from GradleRunner t
 
 | CoverJet plugin | Gradle                 | min JVM |
 |-----------------|------------------------|---------|
+| **0.1.+**       | **8.14.+**             | 17      |    
 | **0.0.+**       | **7.6.4** - **8.13.+** | 17      |    
-
 
 ### Apply plugin
 
@@ -34,7 +34,6 @@ plugins {
 The latest release version is ![GitHub Release](https://img.shields.io/github/v/release/gw-kit/cover-jet-plugin)
 
 </details>
-
 
 ## Configuration
 
@@ -58,7 +57,6 @@ coverJet {
 ```
 
 The test coverage data in binary format will be saved by the path `build/coverage/<test-task-name>.ic`.
-
 
 ## Gradle Runner tests
 

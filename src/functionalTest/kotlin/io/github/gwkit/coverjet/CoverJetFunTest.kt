@@ -34,20 +34,25 @@ class CoverJetFunTest {
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "7.6.4",
             "8.13",
             "8.14.2",
+//            "9.0.0-rc-1", // TODO: Currently got error, try later
         ]
     )
-    fun `test tasks should generate binary coverage files`() {
+    fun `test tasks should generate binary coverage files`(
+        gradleVersion: String,
+    ) {
         // WHEN
         val testTasks = listOf(
             JavaPlugin.TEST_TASK_NAME,
             "intTest",
+//            TODO: https://github.com/gradle/gradle/issues/25979
+//            "--configuration-cache",
         )
 
         // THEN
         gradleRunner
+            .withGradleVersion(gradleVersion)
             .runTask(*testTasks.toTypedArray())
             .printLogs(false)
 
@@ -56,7 +61,7 @@ class CoverJetFunTest {
         assertSoftly(baseReportDirFile) {
             testTasks.forEach { task ->
                 resolve("coverage/${task}.ic").shouldBeAFile()
-                resolve("testkit/${task}-testkit-gradle.properties").shouldBeAFile()
+                resolve("tmp/${task}TestKitProperties/testkit-gradle.properties").shouldBeAFile()
                 resolve("tmp/${task}CovAgentArgs/intellij-agent.args").shouldBeAFile()
                 resolve("tmp/${task}CovJvmParameter/jvm-agent.arg").shouldBeAFile()
             }
