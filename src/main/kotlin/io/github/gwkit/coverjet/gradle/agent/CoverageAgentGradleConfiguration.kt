@@ -1,6 +1,5 @@
 package io.github.gwkit.coverjet.gradle.agent
 
-import io.github.gwkit.coverjet.gradle.CoverJetExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
@@ -9,10 +8,10 @@ import java.io.File
 const val AGENT_CONFIG_NAME = "coverJetAgent"
 
 internal fun Project.registerAgentConfigWithDependency(
-    extension: CoverJetExtension,
+    covAgentVersion: Provider<String>,
 ): Provider<File> {
     val agentConfig: Provider<Configuration> = project.configurations.register(AGENT_CONFIG_NAME) { config ->
-        dependencies.add(config.name, intellijAgentDep(extension.intellijCoverageVersion))
+        dependencies.add(config.name, intellijAgentDep(covAgentVersion))
     }
     return agentConfig.map { it.singleFile }
 }

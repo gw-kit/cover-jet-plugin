@@ -14,9 +14,10 @@ Also, the plugin provides infrastructure to collect coverage from GradleRunner t
 
 `CoverJet` compatibility table:
 
-| CoverJet plugin | Gradle                 | min JVM |
-|-----------------|------------------------|---------|
-| **0.0.+**       | **7.6.4** - **8.13.+** | 17      |    
+| CoverJet plugin | Gradle                  | min JVM |
+|-----------------|-------------------------|---------|
+| **0.1.+**       | **8.14.+** - **8.13.+** | 17      |    
+| **0.0.+**       | **7.6.4** - **8.13.+**  | 17      |    
 
 
 ### Apply plugin
