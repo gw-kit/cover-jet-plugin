@@ -1,17 +1,18 @@
 package io.github.gwkit.coverjet.gradle.provider
 
+import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.process.CommandLineArgumentProvider
-import java.io.File
+import java.io.Serializable
 import javax.inject.Inject
 
 internal class TestKitFileProvider @Inject constructor(
-    private val testKitFile: Provider<File>,
-) : CommandLineArgumentProvider {
+    private val testKitFile: Provider<RegularFile>,
+) : CommandLineArgumentProvider, Serializable {
 
     override fun asArguments(): MutableIterable<String> {
         val jvmProperty: String = testKitFile
-            .map { it.absolutePath }
+            .map { it.asFile.absolutePath }
             .map { path -> "-D$TEST_KIT_FILE=$path" }
             .get()
         return mutableListOf(jvmProperty)

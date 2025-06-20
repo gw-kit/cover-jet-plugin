@@ -29,7 +29,17 @@ internal fun Project.registerCovJvmParameter(
 }
 
 internal fun TaskProvider<CovJvmParameter>.readJavaAgentParameter(): Provider<List<String>> {
-    return flatMap { it.javaAgentParameter.asFile }.map { file -> file.readLines() }
+    return flatMap { it.javaAgentParameters.readJavaAgentParameter() }
+}
+
+internal fun RegularFileProperty.readJavaAgentParameter(): Provider<List<String>> {
+    return map { it.asFile }
+        .filter {
+            val res = it.exists()
+            println("---------------------------- $it exists: $res")
+            res
+        }
+        .map { file -> file.readLines() }
 }
 
 internal open class CovJvmParameter @Inject constructor(
@@ -43,7 +53,7 @@ internal open class CovJvmParameter @Inject constructor(
     val covAgentPropertiesPath: Property<String> = objects.property(String::class.java)
 
     @OutputFile
-    val javaAgentParameter: RegularFileProperty = objects.fileProperty().convention {
+    val javaAgentParameters: RegularFileProperty = objects.fileProperty().convention {
         temporaryDir.resolve("jvm-agent.arg")
     }
 
@@ -62,7 +72,7 @@ internal open class CovJvmParameter @Inject constructor(
             .get()
             .joinToString("\n")
 
-        javaAgentParameter.asFile.get().writeText(agentProperty)
+        javaAgentParameters.asFile.get().writeText(agentProperty)
     }
 
     private val String.jvmProp: String
