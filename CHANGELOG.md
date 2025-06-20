@@ -1,9 +1,15 @@
 # CoverJet Gradle plugin Changelog
 
+## 0.1.2
+
+- Fixed no such file when configuration cache is enabled
+
+
 ## 0.1.1
 
 - #23 Fixed configuration cache
 - Updated Gradle to 8.14.2
+
 
 ## 0.1.0
 
