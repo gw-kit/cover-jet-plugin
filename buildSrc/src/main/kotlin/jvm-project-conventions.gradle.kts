@@ -4,8 +4,6 @@ plugins {
 
     id("io.gitlab.arturbosch.detekt")
     id("unit-tests-conventions")
-
-    id("basic-coverage-conventions")
 }
 
 val targetJvmVersion = JavaLanguageVersion.of(17)
