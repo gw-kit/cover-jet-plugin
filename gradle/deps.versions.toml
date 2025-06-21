@@ -4,7 +4,7 @@ mockkVer = "1.14.2"
 kotestVer = "5.9.1"
 
 deltaCoverageVer = "3.4.2-SNAPSHOT.15788024751"
-coverJetVer = "0.1.3-SNAPSHOT.15799019275"
+coverJetVer = "0.1.3"
 
 [libraries]
 # Kotlin
