@@ -2,6 +2,7 @@ rootProject.name = "cover-jet-conventions"
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven {

@@ -1,3 +1,5 @@
+import io.github.surpsg.deltacoverage.gradle.CoverageEntity
+
 plugins {
     `jvm-project-conventions`
     id("java-gradle-plugin")
@@ -53,4 +55,23 @@ tasks.named("check") {
             subprojects.map { it.tasks.named("check") }
         }
     )
+}
+
+deltaCoverageReport {
+    view(JavaPlugin.TEST_TASK_NAME) {
+        enabled = false // Temporary disable
+        violationRules.failIfCoverageLessThan(0.9)
+    }
+    view("functionalTest") {
+        violationRules {
+            failIfCoverageLessThan(0.6)
+            CoverageEntity.BRANCH {
+                minCoverageRatio = 0.5
+            }
+        }
+    }
+    view("aggregated") {
+        enabled = false // Temporary disable
+        violationRules.failIfCoverageLessThan(0.91)
+    }
 }
