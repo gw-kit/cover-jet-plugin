@@ -72,7 +72,7 @@ open class CoverJetPlugin : Plugin<Project> {
         inputs.files(genTestKitPropsProvider)
 
         jvmArgumentProviders += TestKitFileProvider(
-            genTestKitPropsProvider.flatMap { it.javaAgentParametersFile }
+            genTestKitPropsProvider.flatMap { it.propertiesFile }
         )
 
         project.getSourceSet(testTaskName) { sourceSet ->
