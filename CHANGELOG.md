@@ -1,5 +1,10 @@
 # CoverJet Gradle plugin Changelog
 
+## 0.1.3
+
+- Fix incomplete test kit properties file content.
+
+
 ## 0.1.2
 
 - Fixed no such file when configuration cache is enabled
