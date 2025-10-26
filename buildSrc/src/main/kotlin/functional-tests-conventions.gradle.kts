@@ -12,7 +12,7 @@ plugins {
 testing.suites {
 
     val functionalTest by registering(JvmTestSuite::class) {
-        useJUnitJupiter()
+        useJUnitJupiter(libDeps.versions.junitVer)
 
         sources {
             java {

@@ -2,6 +2,7 @@ package io.github.gwkit.coverjet
 
 import io.github.gwkit.coverjet.gradle.provider.TestKitFileProvider
 import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
@@ -66,4 +67,20 @@ fun BuildResult.printLogs(enabled: Boolean): BuildResult {
         )
     }
     return this
+}
+
+/**
+ * Asserts that all CoverJet plugin output files exist for the given task.
+ *
+ * @param buildDir The build directory (typically `rootProjectDir.resolve("build")` for root project,
+ *                 or `rootProjectDir.resolve("module1/build")` for subprojects)
+ * @param taskName The name of the test task (e.g., "test", "intTest")
+ */
+fun assertCoverJetTaskOutputFiles(buildDir: File, taskName: String) {
+    assertSoftly(buildDir) {
+        resolve("coverage/${taskName}.ic").shouldBeAFile()
+        resolve("tmp/${taskName}TestKitProperties/testkit-gradle.properties").shouldBeAFile()
+        resolve("tmp/${taskName}CovAgentArgs/intellij-agent.args").shouldBeAFile()
+        resolve("tmp/${taskName}CovJvmParameter/jvm-agent.arg").shouldBeAFile()
+    }
 }

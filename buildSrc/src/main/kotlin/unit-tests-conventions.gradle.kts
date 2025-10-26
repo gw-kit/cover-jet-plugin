@@ -9,7 +9,7 @@ plugins {
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
+            useJUnitJupiter(libDeps.versions.junitVer)
             dependencies {
                 implementation(libDeps.assertj)
                 implementation(libDeps.mockk)
