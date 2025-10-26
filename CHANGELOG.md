@@ -1,6 +1,6 @@
 # CoverJet Gradle plugin Changelog
 
-## Unreleased
+## 0.1.4
 
 - Fixed cross-module coverage collection in multi-module projects
   - Pattern collection now deferred until execution time when all projects are configured
