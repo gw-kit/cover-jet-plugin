@@ -12,5 +12,4 @@ dependencies {
 
     implementation(deps.detekt)
     implementation(deps.deltaCoverage)
-    implementation(deps.coverJet)
 }
