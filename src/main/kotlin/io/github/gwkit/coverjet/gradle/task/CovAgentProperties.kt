@@ -53,6 +53,10 @@ open class CovAgentProperties @Inject constructor(
     fun genProperties() {
         val includePatterns: List<String> = includeSourcesPatterns.get()
 
+        logger.debug("CoverJet: Generating coverage agent properties for task '{}'", taskName.get())
+        logger.debug("CoverJet: Coverage file path: {}", binaryCoverageFilePath.get())
+        logger.debug("CoverJet: Include patterns ({}): {}", includePatterns.size, includePatterns)
+
         propertiesFile.get().asFile.printWriter().use { pw ->
             with(pw) {
                 appendLine(binaryCoverageFilePath.get())
@@ -69,6 +73,8 @@ open class CovAgentProperties @Inject constructor(
                 appendLine("org\\.jetbrains\\.kotlin\\.gradle\\..*")
             }
         }
+
+        logger.debug("CoverJet: Properties file written to: {}", propertiesFile.get().asFile)
     }
 
     companion object {
