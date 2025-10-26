@@ -20,22 +20,14 @@ subprojects {
         mavenCentral()
     }
 
-    tasks.withType<Test> {
-        useJUnitPlatform()
-    }
-
-    dependencies {
-        testImplementation(platform("org.junit:junit-bom:5.13.4"))
-        testImplementation("org.junit.jupiter:junit-jupiter")
-    }
-
     testing.suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter("5.13.4")
+        }
         val intTest by registering(JvmTestSuite::class) {
-            useJUnitJupiter()
+            useJUnitJupiter("5.13.4")
             dependencies {
                 implementation(project())
-                implementation(platform("org.junit:junit-bom:5.13.4"))
-                implementation("org.junit.jupiter:junit-jupiter")
             }
         }
     }

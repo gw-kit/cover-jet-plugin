@@ -5,8 +5,6 @@ import io.github.gwkit.coverjet.test.GradleRunnerInstance
 import io.github.gwkit.coverjet.test.ProjectFile
 import io.github.gwkit.coverjet.test.RestorableFile
 import io.github.gwkit.coverjet.test.RootProjectDir
-import io.kotest.assertions.assertSoftly
-import io.kotest.matchers.file.shouldBeAFile
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeEach
@@ -35,7 +33,7 @@ class CoverJetFunTest {
     @ValueSource(
         strings = [
             "8.13",
-            "8.14.2",
+            "8.14.3",
 //            "9.0.0-rc-1", // TODO: Currently got error, try later
         ]
     )
@@ -57,14 +55,9 @@ class CoverJetFunTest {
             .printLogs(false)
 
         // AND THEN
-        val baseReportDirFile = rootProjectDir.resolve("build/")
-        assertSoftly(baseReportDirFile) {
-            testTasks.forEach { task ->
-                resolve("coverage/${task}.ic").shouldBeAFile()
-                resolve("tmp/${task}TestKitProperties/testkit-gradle.properties").shouldBeAFile()
-                resolve("tmp/${task}CovAgentArgs/intellij-agent.args").shouldBeAFile()
-                resolve("tmp/${task}CovJvmParameter/jvm-agent.arg").shouldBeAFile()
-            }
+        val buildDir = rootProjectDir.resolve("build")
+        testTasks.forEach { taskName ->
+            assertCoverJetTaskOutputFiles(buildDir, taskName)
         }
     }
 }

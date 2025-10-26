@@ -7,6 +7,7 @@ import io.kotest.assertions.assertSoftly
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.file.shouldBeAFile
 import io.kotest.matchers.file.shouldExist
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -30,18 +31,29 @@ class MultiModuleCoverageTest {
     fun `all modules should include patterns for all other modules`(
         gradleVersion: String,
     ) {
-        // WHEN: Run tests for module1
+        // GIVEN
+        val testTasks = listOf(
+            JavaPlugin.TEST_TASK_NAME,
+            "intTest",
+        )
+
+        // WHEN: Run agent args generation tasks
         gradleRunner
             .withGradleVersion(gradleVersion)
-            .runTask(":module1:testCovAgentArgs", ":module2:testCovAgentArgs")
+            .runTask(*testTasks.toTypedArray())
             .printLogs(false)
 
         // THEN: Check module1's agent args include both module1 and module2 patterns
-        // THEN: Check module2's agent args also include both patterns
+        // AND: Check module2's agent args also include both patterns
         assertIntellijAgentArgs(
             "module1/build/tmp/testCovAgentArgs/intellij-agent.args",
             "module2/build/tmp/testCovAgentArgs/intellij-agent.args",
         )
+
+        // AND THEN
+        assertCoverJetTaskOutputFiles(rootProjectDir.resolve("module1/build"), "test")
+        assertCoverJetTaskOutputFiles(rootProjectDir.resolve("module2/build"), "test")
+        assertCoverJetTaskOutputFiles(rootProjectDir.resolve("module2/build"), "intTest")
     }
 
     private fun assertIntellijAgentArgs(vararg intellijAgentArgsFile: String) {
