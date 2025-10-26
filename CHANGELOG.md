@@ -1,11 +1,12 @@
 # CoverJet Gradle plugin Changelog
 
-## 0.1.4
+## Unreleased
 
 - Fixed cross-module coverage collection in multi-module projects
   - Pattern collection now deferred until execution time when all projects are configured
   - Ensures all modules' source patterns are included in coverage agent configuration
   - Removed complex Provider merging logic in favor of simpler deferred evaluation
+- Updated Gradle to 9.1.0
 
 ## 0.1.3
 
