@@ -16,8 +16,8 @@ Also, the plugin provides infrastructure to collect coverage from GradleRunner t
 
 | CoverJet plugin | Gradle                 | min JVM |
 |-----------------|------------------------|---------|
-| **0.1.+**       | **8.14.+**             | 17      |    
-| **0.0.+**       | **7.6.4** - **8.13.+** | 17      |    
+| **0.1.+**       | **8.14+** - **9.1+**   | 17      |
+| **0.0.+**       | **7.6.4** - **8.13+**  | 17      |    
 
 ### Apply plugin
 
