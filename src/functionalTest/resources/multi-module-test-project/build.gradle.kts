@@ -14,7 +14,7 @@ repositories {
 subprojects {
     apply(plugin = "java")
     apply(plugin = "kotlin")
-    apply(plugin = "org.jetbrains.kotlinx.kover")
+    apply(plugin = "io.github.gw-kit.cover-jet")
 
     repositories {
         mavenCentral()

@@ -1,6 +1,5 @@
 package io.github.gwkit.coverjet.gradle.task
 
-import io.github.gwkit.coverjet.gradle.util.getSourceSet
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
@@ -10,6 +9,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
@@ -82,27 +82,20 @@ open class CovAgentProperties @Inject constructor(
 private object IncludeSourcesPatterns {
 
     fun buildIncludeSourcesPatterns(project: Project): Provider<Set<String>> {
-        return project.rootProject.allprojects.asSequence()
-            .mapNotNull { proj -> proj.getSourceSet("main") }
-            .map { sourceSetProvider -> sourceSetProvider.map { it.allJava.srcDirs } }
-            .fold(
-                project.provider<Set<File>> { emptySet() },
-                ::merge,
-            )
-            .map { allSourceFiles ->
-                allSourceFiles.asSequence()
-                    .filter { it.exists() }
-                    .map { file -> obtainCommonPackage(file) }
-                    .map { it.toIncludePackageRegex() }
-                    .toSet()
-            }
-    }
-
-    private fun <T : Any, C : Iterable<T>> merge(
-        first: Provider<out C>,
-        second: Provider<out C>
-    ): Provider<Iterable<T>> = first.zip(second) { left, right ->
-        left + right
+        return project.provider {
+            // Defer evaluation until execution time when all projects are configured
+            project.rootProject.allprojects.asSequence()
+                .mapNotNull { proj ->
+                    // Find sourceSets extension and get "main" source set
+                    val sourceSets = proj.extensions.findByName("sourceSets") as? SourceSetContainer
+                    sourceSets?.findByName("main")
+                }
+                .flatMap { sourceSet -> sourceSet.allJava.srcDirs }
+                .filter { it.exists() }
+                .map { file -> obtainCommonPackage(file) }
+                .map { it.toIncludePackageRegex() }
+                .toSet()
+        }
     }
 
     private fun obtainCommonPackage(srcDir: File): String {
