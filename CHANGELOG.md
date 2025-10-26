@@ -5,6 +5,7 @@
 - Fixed cross-module coverage collection in multi-module projects
   - Pattern collection now deferred until execution time when all projects are configured
   - Ensures all modules' source patterns are included in coverage agent configuration
+  - Removed complex Provider merging logic in favor of simpler deferred evaluation
 
 ## 0.1.3
 
