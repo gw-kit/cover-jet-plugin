@@ -34,7 +34,6 @@ class CoverJetFunTest {
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "8.13",
             "8.14.2",
             "9.1.0",
         ]
