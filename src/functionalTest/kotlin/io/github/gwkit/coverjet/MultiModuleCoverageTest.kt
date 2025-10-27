@@ -1,0 +1,71 @@
+package io.github.gwkit.coverjet
+
+import io.github.gwkit.coverjet.test.GradlePluginTest
+import io.github.gwkit.coverjet.test.GradleRunnerInstance
+import io.github.gwkit.coverjet.test.RootProjectDir
+import io.kotest.assertions.assertSoftly
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.file.shouldBeAFile
+import io.kotest.matchers.file.shouldExist
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import java.io.File
+
+@GradlePluginTest(TestProjects.MULTI_MODULE, kts = true)
+class MultiModuleCoverageTest {
+
+    @RootProjectDir
+    lateinit var rootProjectDir: File
+
+    @GradleRunnerInstance
+    lateinit var gradleRunner: GradleRunner
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "8.14.3",
+        ]
+    )
+    fun `all modules should include patterns for all other modules`(
+        gradleVersion: String,
+    ) {
+        // GIVEN
+        val testTasks = listOf(
+            JavaPlugin.TEST_TASK_NAME,
+            "intTest",
+        )
+
+        // WHEN: Run agent args generation tasks
+        gradleRunner
+            .withGradleVersion(gradleVersion)
+            .runTask(*testTasks.toTypedArray())
+            .printLogs(false)
+
+        // THEN: Check module1's agent args include both module1 and module2 patterns
+        // AND: Check module2's agent args also include both patterns
+        assertIntellijAgentArgs(
+            "module1/build/tmp/testCovAgentArgs/intellij-agent.args",
+            "module2/build/tmp/testCovAgentArgs/intellij-agent.args",
+        )
+
+        // AND THEN
+        assertCoverJetTaskOutputFiles(rootProjectDir.resolve("module1/build"), "test")
+        assertCoverJetTaskOutputFiles(rootProjectDir.resolve("module2/build"), "test")
+        assertCoverJetTaskOutputFiles(rootProjectDir.resolve("module2/build"), "intTest")
+    }
+
+    private fun assertIntellijAgentArgs(vararg intellijAgentArgsFile: String) {
+        sequenceOf(*intellijAgentArgsFile).forEach {
+            assertSoftly(rootProjectDir.resolve(it)) {
+                shouldExist()
+                shouldBeAFile()
+
+                readLines()
+                    .shouldContain("com\\.module1\\..*")
+                    .shouldContain("com\\.module2\\..*")
+            }
+        }
+    }
+}
