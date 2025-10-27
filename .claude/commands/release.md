@@ -47,15 +47,29 @@ You are tasked with preparing a release by updating version, reviewing changelog
 
 ### 2. Check and update README.md
 
-1. **Review README.md**
-   - Check the compatibility table (around line 17)
-   - Verify the version ranges are up to date
+1. **Review README.md compatibility table**
+   - Locate the compatibility table (around line 17)
+   - The table should include: CoverJet plugin version, Gradle version, min JVM, and min Kotlin version
+   - Example format:
+     ```
+     | CoverJet plugin | Gradle                 | min JVM | min Kotlin |
+     |-----------------|------------------------|---------|------------|
+     | **0.1.+**       | **8.14+** - **9.1+**   | 17      | 1.9.0      |
+     ```
+
+2. **Update compatibility table**
+   - Verify Gradle version ranges are up to date
+   - Check minimum JVM version is correct
+   - **Set minimum Kotlin version**:
+     - Check `gradle/deps.versions.toml` for current Kotlin version
+     - Determine minimum compatible Kotlin version for this release
+     - Update the table with the min Kotlin version for the current plugin version row
+   - If adding a new row for the current release, copy the previous row and update versions
+
+3. **Review other README sections**
    - Check for any outdated information
    - Ensure installation instructions reference correct versions
-
-2. **Update if needed**
-   - If there are new Gradle version requirements, update the table
-   - If there are new features, ensure they're documented
+   - Verify any new features are documented
    - Ask the user if any README updates are needed
 
 ### 3. Run tests to verify release
@@ -76,11 +90,7 @@ You are tasked with preparing a release by updating version, reviewing changelog
    - Do NOT add the Claude Code attribution for release commits
    - Example: `git commit -m "Release version 0.1.4"`
 
-3. **Push to remote**
-   - Push the release branch: `git push origin release/<version>`
-   - If the branch doesn't exist remotely yet, use: `git push -u origin release/<version>`
-
-4. **Provide next steps**
+3. **Provide next steps**
    - Inform the user that the release branch is ready
    - Remind them to:
      - Create a PR from `release/<version>` to `main`
