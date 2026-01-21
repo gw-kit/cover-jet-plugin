@@ -11,7 +11,7 @@ coverJetVer = "0.1.4"
 kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "2.3.0" }
 
 # Plugins
-pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.3.1" }
+pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "2.0.0" }
 deltaCoverage = { module = "io.github.gw-kit:delta-coverage-gradle", version.ref = "deltaCoverageVer" }
 coverJet = { module = "io.github.gw-kit.cover-jet:io.github.gw-kit.cover-jet.gradle.plugin", version.ref = "coverJetVer" }
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
