@@ -3,7 +3,7 @@ junitVer = "5.13.4"
 mockkVer = "1.14.7"
 kotestVer = "5.9.1"
 
-deltaCoverageVer = "3.4.2"
+deltaCoverageVer = "3.5.1"
 coverJetVer = "0.1.4"
 
 [libraries]
