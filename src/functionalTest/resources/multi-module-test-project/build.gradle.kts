@@ -2,7 +2,7 @@ import org.gradle.api.plugins.jvm.JvmTestSuite
 
 plugins {
     java
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.3.0"
     id("io.github.gw-kit.cover-jet")
     `java-test-fixtures`
 }
