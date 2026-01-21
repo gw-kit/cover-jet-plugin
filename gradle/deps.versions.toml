@@ -1,7 +1,7 @@
 [versions]
 junitVer = "5.13.4"
 mockkVer = "1.14.7"
-kotestVer = "5.9.1"
+kotestVer = "6.1.0"
 
 deltaCoverageVer = "3.5.1"
 coverJetVer = "0.1.4"
