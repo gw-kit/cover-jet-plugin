@@ -86,7 +86,7 @@ jobs:
             '**/build/test-results/*/TEST-*.xml'
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/coverage-reports/delta-coverage/**/report.xml
