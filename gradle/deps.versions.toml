@@ -8,7 +8,7 @@ coverJetVer = "0.1.4"
 
 [libraries]
 # Kotlin
-kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "2.3.0" }
+kotlinJvm = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version = "2.4.20" }
 
 # Plugins
 pluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "2.1.1" }
