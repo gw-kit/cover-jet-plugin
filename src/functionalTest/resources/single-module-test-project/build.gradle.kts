@@ -23,7 +23,7 @@ testing.suites {
     val test by getting(JvmTestSuite::class) {
         useJUnitJupiter()
         dependencies {
-            implementation(platform("org.junit:junit-bom:6.0.2"))
+            implementation(platform("org.junit:junit-bom:6.1.3"))
             implementation("org.junit.jupiter:junit-jupiter")
         }
     }
@@ -31,7 +31,7 @@ testing.suites {
         useJUnitJupiter()
         dependencies {
             implementation(project())
-            implementation(platform("org.junit:junit-bom:6.0.2"))
+            implementation(platform("org.junit:junit-bom:6.1.3"))
             implementation("org.junit.jupiter:junit-jupiter")
         }
     }
